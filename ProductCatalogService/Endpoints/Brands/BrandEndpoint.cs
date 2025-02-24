@@ -1,7 +1,11 @@
+using System.Net;
+using AutoMapper;
+using ProductCatalogService.Endpoints.Brands.Dtos;
+using ProductCatalogService.Endpoints.Common;
 using ProductCatalogService.Models;
 using ProductCatalogService.Repositories.Common;
 
-namespace ProductCatalogService.Endpoints;
+namespace ProductCatalogService.Endpoints.Brands;
 
 public static class BrandEndpoint
 {
@@ -11,10 +15,15 @@ public static class BrandEndpoint
         var group = endpoints.MapGroup("/api/brands").WithTags("Brands");
 
         // GET: Retrieve all brands
-        group.MapGet("/", async (IRepository<Brand> repository) =>
+        group.MapGet("/", async (IRepository<Brand> repository, IMapper mapper) =>
         {
             var brands = await repository.GetAsync();
-            return Results.Ok(brands);
+
+            return Results.Ok(new ResultDto()
+            {
+                Data = mapper.Map<IEnumerable<Brand>, IEnumerable<BrandDto>>(brands),
+                StatusCode = (int)HttpStatusCode.OK,
+            });
         })
         .WithName("GetAllBrands")
         .WithOpenApi();
@@ -24,10 +33,10 @@ public static class BrandEndpoint
             {
                 var brand = await repository.GetByIdAsync(id);
 
-            return brand is not null
-                ? Results.Ok(brand)
-                : Results.NotFound($"Brand with ID {id} not found.");
-        })
+                return brand is not null
+                    ? Results.Ok(brand)
+                    : Results.NotFound($"Brand with ID {id} not found.");
+            })
         .WithName("GetBrandById")
         .WithOpenApi();
 

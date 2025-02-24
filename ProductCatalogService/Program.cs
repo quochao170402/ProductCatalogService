@@ -29,8 +29,6 @@ if (app.Environment.IsDevelopment())
 app.UseAntiforgery();
 
 app.UseHttpsRedirection();
-app.MapBrandEndpoints();
-app.MapCategoryEndpoints();
-app.MapProductEndpoints();
+app.MapProductServiceEndpoints();
 
 app.Run();
