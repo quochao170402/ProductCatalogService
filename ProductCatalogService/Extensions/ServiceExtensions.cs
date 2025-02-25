@@ -15,6 +15,12 @@ public static class ServiceExtensions
         return services;
     }
 
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IBrandService, BrandService>();
+        return services;
+    }
 
     private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
     {

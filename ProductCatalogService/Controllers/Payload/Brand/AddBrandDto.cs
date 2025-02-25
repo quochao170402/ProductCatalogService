@@ -1,10 +1,10 @@
 using System;
 
-namespace ProductCatalogService.Endpoints.Brands.Dtos;
+namespace ProductCatalogService.Controllers.Payload.Brands;
 
 public class AddBrandDto
 {
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public IFormFile Image { get; set; }
+    public IFormFile? Image { get; set; }
 }

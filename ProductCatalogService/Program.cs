@@ -1,17 +1,24 @@
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
-using ProductCatalogService.Endpoints;
+using ProductCatalogService.Configurations;
 using ProductCatalogService.Extensions;
+using ProductCatalogService.Middlewares;
+using ProductCatalogService.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddControllers();
+builder.Services.AddServices();
+builder.Services.AddValidator();
 builder.Services.AddAntiforgery(options => options.SuppressXFrameOptionsHeader = true);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 builder.Services.AddMongoDb(builder.Configuration);
 builder.Services.AddRepositories();
 builder.Services.AddStorageService(builder.Configuration);
+builder.Services.AddAutoMapperProfiles();
+
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -26,9 +33,11 @@ if (app.Environment.IsDevelopment())
     });
 
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAntiforgery();
 
 app.UseHttpsRedirection();
-app.MapProductServiceEndpoints();
+app.MapControllers();
 
 app.Run();

@@ -1,6 +1,6 @@
 using System;
 using AutoMapper;
-using ProductCatalogService.Endpoints.Brands.Dtos;
+using ProductCatalogService.Controllers.Payload.Brands;
 using ProductCatalogService.Models;
 
 namespace ProductCatalogService.Profiles;
