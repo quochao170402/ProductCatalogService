@@ -6,7 +6,7 @@ namespace ProductCatalogService.Repositories.Common;
 
 public class Repository<T> : IRepository<T> where T : IModel
 {
-    private readonly IMongoCollection<T> _collection;
+    protected readonly IMongoCollection<T> _collection;
 
     public Repository(IMongoDatabase database)
     {
@@ -29,7 +29,16 @@ public class Repository<T> : IRepository<T> where T : IModel
         return entity;
     }
 
-    public async Task<IEnumerable<T>> GetAsync()
+    public T? GetById(string id)
+    {
+        var filter = Builders<T>.Filter.Eq(x => x.IsDeleted, false);
+        filter &= Builders<T>.Filter.Eq(x => x.Id, id);
+        var entity = _collection.Find(filter).FirstOrDefault();
+
+        return entity;
+    }
+
+    public async Task<List<T>> GetAsync()
     {
         var filter = Builders<T>.Filter.Eq(x => x.IsDeleted, false);
         var entities = await _collection.Find(filter).ToListAsync();

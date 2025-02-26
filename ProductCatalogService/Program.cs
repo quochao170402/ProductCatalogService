@@ -5,6 +5,7 @@ using ProductCatalogService.Configurations;
 using ProductCatalogService.Extensions;
 using ProductCatalogService.Middlewares;
 using ProductCatalogService.Profiles;
+using ProductCatalogService.Services.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -17,7 +18,7 @@ builder.Services.AddMongoDb(builder.Configuration);
 builder.Services.AddRepositories();
 builder.Services.AddStorageService(builder.Configuration);
 builder.Services.AddAutoMapperProfiles();
-
+builder.Services.AddGrpc();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -36,6 +37,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAntiforgery();
+app.MapGrpcService<GrpcProductServiceImpl>();
 
 app.UseHttpsRedirection();
 app.MapControllers();

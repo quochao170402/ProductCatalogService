@@ -12,6 +12,8 @@
         <PackageReference Include="FluentValidation" Version="11.11.0" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+        <PackageReference Include="Google.Protobuf" Version="3.30.0-rc1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.67.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
         <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
         <PackageReference Include="MongoDB.Driver.Core" Version="2.30.0" />
@@ -22,7 +24,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Exceptions\" />
+        <Folder Include="Exceptions\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="Protos\Product.proto" GrpcServices="Server" />
     </ItemGroup>
 
 </Project>

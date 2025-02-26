@@ -12,6 +12,8 @@ public static class ValidatorExtensions
         services.AddValidatorsFromAssemblyContaining<BrandValidator>();
         services.AddValidatorsFromAssemblyContaining<CategoryValidator>();
         services.AddValidatorsFromAssemblyContaining<SubCategoryValidator>();
+        services.AddValidatorsFromAssemblyContaining<AddProductDtoValidator>();
+        services.AddValidatorsFromAssemblyContaining<UpdateProductDtoValidator>();
         services.AddFluentValidationAutoValidation();
         return services;
 

@@ -19,6 +19,7 @@ public static class ServiceExtensions
     {
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IBrandService, BrandService>();
+        services.AddScoped<IProductService, ProductService>();
         return services;
     }
 

@@ -9,6 +9,7 @@ public static class AutoMapperExtension
     {
         services.AddAutoMapper(typeof(BrandProfile));
         services.AddAutoMapper(typeof(CategoryProfile));
+        services.AddAutoMapper(typeof(ProductProfile));
 
         return services;
     }

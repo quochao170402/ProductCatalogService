@@ -12,7 +12,8 @@ public interface IRepository<T> where T : IModel
 
     // Read
     Task<T?> GetByIdAsync(string id);
-    Task<IEnumerable<T>> GetAsync();
+    T? GetById(string id);
+    Task<List<T>> GetAsync();
 
     // Update
     Task UpdateAsync(T entity);
