@@ -1,4 +1,5 @@
 using System;
+using MongoDB.Driver;
 
 namespace ProductCatalogService.Controllers;
 
@@ -24,7 +25,6 @@ public class CategoryController(
     IMapper mapper) : BaseController
 {
 
-    // GET: Retrieve all categories (non-deleted)
     [HttpGet]
     public async Task<IActionResult> GetAllCategories()
     {
@@ -32,17 +32,13 @@ public class CategoryController(
         return OkResponse(mapper.Map<IEnumerable<CategoryDto>>(categories));
     }
 
-    // GET: Retrieve a category by ID (non-deleted)
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetCategoryById(string id)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetCategoryById(Guid id)
     {
         var category = await repository.GetByIdAsync(id);
-        if (category == null)
-        {
-            return NotFound(new { Message = $"Not found category" });
-        }
-
-        return OkResponse(mapper.Map<CategoryDto>(category));
+        return category == null
+            ? NotFound(new { Message = $"Not found category" })
+            : OkResponse(mapper.Map<CategoryDto>(category));
     }
 
     // POST: Create a new category
@@ -65,8 +61,8 @@ public class CategoryController(
     }
 
     // PUT: Update an existing category
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategory(string id, [FromForm] UpdateCategoryDto dto)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateCategory(Guid id, [FromForm] UpdateCategoryDto dto)
     {
         var category = await categoryService.UpdateAsync(id, dto);
         return CreatedAtAction(nameof(GetCategoryById), new
@@ -81,8 +77,8 @@ public class CategoryController(
     }
 
     // DELETE: Soft delete a category by ID
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCategory(string id)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteCategory(Guid id)
     {
         var category = await repository.GetByIdAsync(id);
         if (category == null)

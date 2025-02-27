@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -14,13 +15,13 @@ public class GrpcProductServiceImpl(IProductService productService) : GrpcProduc
     public override async Task<ProductResponse> GetProduct(ProductRequest request, ServerCallContext context)
     {
         var productIds = request.ProductIds.ToList();
-        var products = await productService.GetByIdsAsync(productIds);
+        var products = await productService.GetByIdsAsync(productIds.Select(Guid.Parse).ToList());
         var productResponse = new ProductResponse();
         productResponse.Products.AddRange(products.Select(x => new ProductModel()
         {
             Id = x.Id,
             Name = x.Name,
-            Price = x.Price.ToString()
+            Price = x.Price.ToString(CultureInfo.CurrentCulture)
         }));
         return productResponse;
     }

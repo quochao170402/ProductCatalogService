@@ -27,8 +27,8 @@ public class BrandController(
     }
 
     // GET: Retrieve a brand by ID
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetBrandById(string id)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetBrandById(Guid id)
     {
         var brand = await repository.GetByIdAsync(id);
         if (brand == null)
@@ -55,8 +55,8 @@ public class BrandController(
     }
 
     // PUT: Update an existing brand
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateBrand(string id, [FromForm] AddBrandDto dto)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateBrand(Guid id, [FromForm] AddBrandDto dto)
     {
 
         var brand = await brandService.UpdateAsync(id, dto);
@@ -70,8 +70,8 @@ public class BrandController(
     }
 
     // DELETE: Delete a brand by ID
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteBrand(string id)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteBrand(Guid id)
     {
         var brand = await repository.GetByIdAsync(id);
         if (brand == null)

@@ -2,6 +2,7 @@ using System;
 using AutoMapper;
 using ProductCatalogService.Constants;
 using ProductCatalogService.Controllers.Payload.Brands;
+using ProductCatalogService.Exceptions;
 using ProductCatalogService.Models;
 using ProductCatalogService.Repositories.Common;
 
@@ -11,7 +12,7 @@ namespace ProductCatalogService.Services;
 public interface IBrandService
 {
     Task<BrandDto> AddAsync(AddBrandDto dto);
-    Task<BrandDto> UpdateAsync(string id, AddBrandDto dto);
+    Task<BrandDto> UpdateAsync(Guid id, AddBrandDto dto);
 }
 
 public class BrandService(IRepository<Brand> repository, IStorageService storageService, IMapper mapper) : IBrandService
@@ -20,7 +21,7 @@ public class BrandService(IRepository<Brand> repository, IStorageService storage
     public async Task<BrandDto> AddAsync(AddBrandDto dto)
     {
         var brand = mapper.Map<AddBrandDto, Brand>(dto);
-        if (dto.Image != null && dto.Image.Length > 0)
+        if (dto.Image is { Length: > 0 })
         {
             var url = await storageService.UploadImage(dto.Image, StorageFolderConsts.Brand);
             brand.ImageUrl = url;
@@ -31,13 +32,13 @@ public class BrandService(IRepository<Brand> repository, IStorageService storage
         return mapper.Map<BrandDto>(brand);
     }
 
-    public async Task<BrandDto> UpdateAsync(string id, AddBrandDto dto)
+    public async Task<BrandDto> UpdateAsync(Guid id, AddBrandDto dto)
     {
         var existing = await repository.GetByIdAsync(id)
-            ?? throw new Exception("Brand not found");
+            ?? throw new EntityNotFoundException("Brand not found");
 
         var brand = mapper.Map<AddBrandDto, Brand>(dto);
-        if (dto.Image != null && dto.Image.Length > 0)
+        if (dto.Image is { Length: > 0 })
         {
             var url = await storageService.UploadImage(dto.Image, StorageFolderConsts.Brand);
             brand.ImageUrl = url;

@@ -24,10 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Exceptions\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Protobuf Include="Protos\Product.proto" GrpcServices="Server" />
     </ItemGroup>
 

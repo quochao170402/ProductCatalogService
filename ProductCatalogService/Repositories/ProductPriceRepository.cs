@@ -1,4 +1,3 @@
-using System;
 using MongoDB.Driver;
 using ProductCatalogService.Models;
 using ProductCatalogService.Repositories.Common;
@@ -7,14 +6,14 @@ namespace ProductCatalogService.Repositories;
 
 public interface IProductPriceRepository : IRepository<ProductPrice>
 {
-    Task<List<ProductPrice>> GetByProductIdAsync(string productId);
-    Task<List<ProductPrice>> GetActiveByProductIdsAsync(IEnumerable<string> enumerable);
-    Task InactiveByByIds(IEnumerable<string> ids);
+    Task<List<ProductPrice>> GetByProductIdAsync(Guid productId);
+    Task<List<ProductPrice>> GetActiveByProductIdsAsync(IEnumerable<Guid> productIds);
+    Task InactiveByByIds(IEnumerable<Guid> ids);
 }
 
 public class ProductPriceRepository(IMongoDatabase database) : Repository<ProductPrice>(database), IProductPriceRepository
 {
-    public async Task<List<ProductPrice>> GetByProductIdAsync(string productId)
+    public async Task<List<ProductPrice>> GetByProductIdAsync(Guid productId)
     {
         var filter = Builders<ProductPrice>.Filter.Eq(x => x.ProductId, productId);
         filter &= Builders<ProductPrice>.Filter.Eq(x => x.IsDeleted, false);
@@ -23,7 +22,7 @@ public class ProductPriceRepository(IMongoDatabase database) : Repository<Produc
         return prices;
     }
 
-    public async Task<List<ProductPrice>> GetActiveByProductIdsAsync(IEnumerable<string> productIds)
+    public async Task<List<ProductPrice>> GetActiveByProductIdsAsync(IEnumerable<Guid> productIds)
     {
         var filter = Builders<ProductPrice>.Filter.In(x => x.ProductId, productIds);
         filter &= Builders<ProductPrice>.Filter.Eq(x => x.IsDeleted, false);
@@ -33,7 +32,7 @@ public class ProductPriceRepository(IMongoDatabase database) : Repository<Produc
         return prices;
     }
 
-    public async Task InactiveByByIds(IEnumerable<string> ids)
+    public async Task InactiveByByIds(IEnumerable<Guid> ids)
     {
         var filter = Builders<ProductPrice>.Filter.In(x => x.Id, ids);
         filter &= Builders<ProductPrice>.Filter.Eq(x => x.IsDeleted, false);

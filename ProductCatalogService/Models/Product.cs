@@ -8,9 +8,9 @@ public class Product : Model
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public List<string> ImageUrls { get; set; } = [];
-    public string BrandId { get; set; } = string.Empty;
-    public string CategoryId { get; set; } = string.Empty;
-    public string AppliedPriceId { get; set; } = string.Empty;
+    public Guid BrandId { get; set; }
+    public Guid CategoryId { get; set; }
+    public Guid AppliedPriceId { get; set; }
 
     [BsonIgnore]
     public ProductPrice CurrentPrice { get; set; }

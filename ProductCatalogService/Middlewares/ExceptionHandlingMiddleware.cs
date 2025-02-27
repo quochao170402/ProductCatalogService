@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using ProductCatalogService.Controllers.Common;
+using ProductCatalogService.Exceptions;
 
 namespace ProductCatalogService.Middlewares;
 
@@ -33,6 +34,21 @@ public class ExceptionHandlingMiddleware
                 Status = StatusCodes.Status500InternalServerError,
                 Message = "Server Error"
             };
+
+            switch (exception)
+            {
+                case EntityNotFoundException entityNotFoundException:
+                    problemDetails.Status = StatusCodes.Status404NotFound;
+                    problemDetails.Message = entityNotFoundException.Message ?? "The requested entity was not found.";
+                    context.Response.StatusCode = StatusCodes.Status404NotFound;
+                    break;
+
+                default:
+                    problemDetails.Status = StatusCodes.Status500InternalServerError;
+                    problemDetails.Message = "An unexpected error occurred on the server.";
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    break;
+            }
 
             context.Response.StatusCode =
                 StatusCodes.Status500InternalServerError;

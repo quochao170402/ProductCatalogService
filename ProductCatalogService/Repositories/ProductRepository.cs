@@ -7,12 +7,12 @@ namespace ProductCatalogService.Repositories;
 
 public interface IProductRepository : IRepository<Product>
 {
-    Task<List<Product>> GetByIdsAsync(IEnumerable<string> ids);
+    Task<List<Product>> GetByIdsAsync(IEnumerable<Guid> ids);
 }
 
 public class ProductRepository(IMongoDatabase database) : Repository<Product>(database), IProductRepository
 {
-    public async Task<List<Product>> GetByIdsAsync(IEnumerable<string> ids)
+    public async Task<List<Product>> GetByIdsAsync(IEnumerable<Guid> ids)
     {
         var filter = Builders<Product>.Filter.In(x => x.Id, ids);
         filter &= Builders<Product>.Filter.Eq(x => x.IsDeleted, false);
