@@ -34,21 +34,21 @@ public class UpdateProductDtoValidator : AbstractValidator<UpdateProductDto>
             .WithMessage("DeletedImages must be a valid JSON array of strings.");
     }
 
-    private bool IsValidImage(IFormFile file)
+    private static bool IsValidImage(IFormFile file)
     {
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-        var maxSize = 5 * 1024 * 1024; // 5MB
+        const int maxSize = 5 * 1024 * 1024; // 5MB
 
         var fileExtension = Path.GetExtension(file.FileName)?.ToLower();
         return allowedExtensions.Contains(fileExtension) && file.Length <= maxSize;
     }
 
-    private bool BeValidJson(string json)
+    private static bool BeValidJson(string json)
     {
         if (string.IsNullOrEmpty(json)) return true;
         try
         {
-            var list = JsonConvert.DeserializeObject<List<string>>(json) ?? [];
+            _ = JsonConvert.DeserializeObject<List<string>>(json) ?? [];
             return true;
         }
         catch
@@ -95,21 +95,21 @@ public class AddProductDtoValidator : AbstractValidator<AddProductDto>
             .Must(CategoryExists).WithMessage("CategoryId does not exist.");
     }
 
-    private bool IsValidImage(IFormFile file)
+    private static bool IsValidImage(IFormFile file)
     {
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-        var maxSize = 5 * 1024 * 1024; // 5MB
+        const int maxSize = 5 * 1024 * 1024; // 5MB
 
         var fileExtension = Path.GetExtension(file.FileName)?.ToLower();
         return allowedExtensions.Contains(fileExtension) && file.Length <= maxSize;
     }
 
-    private bool BrandExists(string brandId)
+    private bool BrandExists(Guid brandId)
     {
         return _brandRepository.GetById(brandId) != null;
     }
 
-    private bool CategoryExists(string categoryId)
+    private bool CategoryExists(Guid categoryId)
     {
         return _categoryRepository.GetById(categoryId) != null;
     }

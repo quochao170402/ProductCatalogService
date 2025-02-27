@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalogService.Controllers.Common;
 using ProductCatalogService.Controllers.Payload.Products;
+using ProductCatalogService.Exceptions;
 using ProductCatalogService.Models;
 using ProductCatalogService.Repositories.Common;
 using ProductCatalogService.Services;
@@ -23,11 +24,11 @@ public class ProductController(IRepository<Product> repository,
         return OkResponse(products);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromRoute] string id)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var product = await repository.GetByIdAsync(id)
-            ?? throw new Exception("Not found product");
+            ?? throw new EntityNotFoundException("Not found product");
 
         return OkResponse(mapper.Map<Product, ProductDto>(product));
     }
@@ -49,31 +50,31 @@ public class ProductController(IRepository<Product> repository,
         });
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:guid}")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Update([FromRoute] string id,
+    public async Task<IActionResult> Update([FromRoute] Guid id,
         [FromForm] UpdateProductDto dto)
     {
         await productService.UpdateAsync(id, dto);
         return NoContent();
     }
 
-    [HttpPatch("{id}")]
-    public IActionResult SetPrice([FromRoute] string id, [FromBody] SetPriceDto dto)
+    [HttpPatch("{id:guid}")]
+    public IActionResult SetPrice([FromRoute] Guid id, [FromBody] SetPriceDto dto)
     {
         _ = Task.Run(() => productService.SetPriceAsync(id, dto));
         return NoContent();
     }
 
-    [HttpPatch("{id}/{priceId}")]
-    public IActionResult ApplyPrice([FromRoute] string id, [FromRoute] string priceId)
+    [HttpPatch("{id:guid}/{priceId:guid}")]
+    public IActionResult ApplyPrice([FromRoute] Guid id, [FromRoute] Guid priceId)
     {
         _ = Task.Run(() => productService.ApplyPrice(id, priceId));
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromRoute] string id)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         await repository.DeleteAsync(id);
         return NoContent();

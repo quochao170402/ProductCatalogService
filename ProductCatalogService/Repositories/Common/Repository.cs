@@ -13,14 +13,14 @@ public class Repository<T> : IRepository<T> where T : IModel
         _collection = database.GetCollection<T>(typeof(T).Name);
     }
 
-    public async Task<string> AddAsync(T entity)
+    public async Task<Guid> AddAsync(T entity)
     {
         await _collection.InsertOneAsync(entity);
 
         return entity.Id;
     }
 
-    public async Task<T?> GetByIdAsync(string id)
+    public async Task<T?> GetByIdAsync(Guid id)
     {
         var filter = Builders<T>.Filter.Eq(x => x.IsDeleted, false);
         filter &= Builders<T>.Filter.Eq(x => x.Id, id);
@@ -29,7 +29,7 @@ public class Repository<T> : IRepository<T> where T : IModel
         return entity;
     }
 
-    public T? GetById(string id)
+    public T? GetById(Guid id)
     {
         var filter = Builders<T>.Filter.Eq(x => x.IsDeleted, false);
         filter &= Builders<T>.Filter.Eq(x => x.Id, id);
@@ -50,7 +50,7 @@ public class Repository<T> : IRepository<T> where T : IModel
         await _collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(Guid id)
     {
         await _collection.DeleteOneAsync(e => e.Id == id);
     }

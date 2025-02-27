@@ -8,16 +8,16 @@ public interface IRepository<T> where T : IModel
 {
 
     // Create
-    Task<string> AddAsync(T entity);
+    Task<Guid> AddAsync(T entity);
 
     // Read
-    Task<T?> GetByIdAsync(string id);
-    T? GetById(string id);
+    Task<T?> GetByIdAsync(Guid id);
+    T? GetById(Guid id);
     Task<List<T>> GetAsync();
 
     // Update
     Task UpdateAsync(T entity);
 
     // Delete
-    Task DeleteAsync(string id);
+    Task DeleteAsync(Guid id);
 }

@@ -2,6 +2,7 @@ using System;
 using AutoMapper;
 using ProductCatalogService.Constants;
 using ProductCatalogService.Controllers.Payload.Products;
+using ProductCatalogService.Exceptions;
 using ProductCatalogService.Models;
 using ProductCatalogService.Repositories;
 using ProductCatalogService.Repositories.Common;
@@ -11,12 +12,12 @@ namespace ProductCatalogService.Services;
 public interface IProductService
 {
     Task<IEnumerable<ProductDto>> GetAsync();
-    Task<ProductDto> GetByIdAsync(string id);
+    Task<ProductDto> GetByIdAsync(Guid id);
     Task<ProductDto> AddAsync(AddProductDto dto);
-    Task UpdateAsync(string id, UpdateProductDto dto);
-    Task ApplyPrice(string productId, string priceId);
-    Task SetPriceAsync(string productId, SetPriceDto dto);
-    Task<List<ProductDto>> GetByIdsAsync(List<string> productIds);
+    Task UpdateAsync(Guid id, UpdateProductDto dto);
+    Task ApplyPrice(Guid productId, Guid priceId);
+    Task SetPriceAsync(Guid productId, SetPriceDto dto);
+    Task<List<ProductDto>> GetByIdsAsync(List<Guid> productIds);
 }
 
 public class ProductService(IProductRepository repository,
@@ -24,7 +25,7 @@ public class ProductService(IProductRepository repository,
     IStorageService storageService,
     IMapper mapper) : IProductService
 {
-    public async Task<List<ProductDto>> GetByIdsAsync(List<string> productIds)
+    public async Task<List<ProductDto>> GetByIdsAsync(List<Guid> productIds)
     {
         var products = await repository.GetByIdsAsync(productIds);
         var prices = await priceRepository.GetActiveByProductIdsAsync(products.Select(x => x.Id));
@@ -58,13 +59,13 @@ public class ProductService(IProductRepository repository,
         return mapper.Map<List<Product>, List<ProductDto>>(products);
     }
 
-    public async Task<ProductDto> GetByIdAsync(string id)
+    public async Task<ProductDto> GetByIdAsync(Guid id)
     {
         var product = await repository.GetByIdAsync(id)
-            ?? throw new Exception("Not found product");
+            ?? throw new EntityNotFoundException("Not found product");
 
         var price = await priceRepository.GetByIdAsync(product.AppliedPriceId)
-            ?? throw new Exception("Applied price was deleted");
+            ?? throw new EntityNotFoundException("Applied price was deleted");
 
         product.CurrentPrice = price;
         return mapper.Map<Product, ProductDto>(product);
@@ -101,10 +102,10 @@ public class ProductService(IProductRepository repository,
         return mapper.Map<Product, ProductDto>(product);
     }
 
-    public async Task UpdateAsync(string id, UpdateProductDto dto)
+    public async Task UpdateAsync(Guid id, UpdateProductDto dto)
     {
         var existing = await repository.GetByIdAsync(id)
-            ?? throw new Exception("Not found product");
+            ?? throw new EntityNotFoundException("Not found product");
 
         var deletedImages = dto.GetDeletedImages();
         if (deletedImages.Count > 0)
@@ -124,13 +125,13 @@ public class ProductService(IProductRepository repository,
         await repository.UpdateAsync(existing);
     }
 
-    public async Task ApplyPrice(string productId, string priceId)
+    public async Task ApplyPrice(Guid productId, Guid priceId)
     {
         var product = await repository.GetByIdAsync(productId)
-            ?? throw new Exception("Not found product");
+            ?? throw new EntityNotFoundException("Not found product");
 
         var price = await priceRepository.GetByIdAsync(priceId)
-            ?? throw new Exception("Not found price");
+            ?? throw new EntityNotFoundException("Not found price");
 
         var otherPricesOfProduct = await priceRepository.GetByProductIdAsync(productId);
         await priceRepository.InactiveByByIds(otherPricesOfProduct.Select(x => x.Id));
@@ -146,11 +147,11 @@ public class ProductService(IProductRepository repository,
         ]);
     }
 
-    public async Task SetPriceAsync(string productId, SetPriceDto dto)
+    public async Task SetPriceAsync(Guid productId, SetPriceDto dto)
     {
 
         var product = await repository.GetByIdAsync(productId)
-            ?? throw new Exception("Not found product");
+            ?? throw new EntityNotFoundException("Not found product");
 
         var otherPricesOfProduct = await priceRepository.GetByProductIdAsync(productId);
         await priceRepository.InactiveByByIds(otherPricesOfProduct.Select(x => x.Id));

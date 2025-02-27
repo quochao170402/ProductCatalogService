@@ -1,10 +1,12 @@
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProductCatalogService.Models.Common;
 
 public class Model : IModel
 {
-    public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
+    [BsonGuidRepresentation(GuidRepresentation.Standard)]
+    public Guid Id { get; set; }
     public bool IsDeleted { get; set; } = false;
     public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
