@@ -1,6 +1,10 @@
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
 using CloudinaryDotNet;
 using ProductCatalogService.Extensions.Options;
 using ProductCatalogService.Services;
+using ProductCatalogService.Services.AWSServices;
 
 namespace ProductCatalogService.Extensions;
 
