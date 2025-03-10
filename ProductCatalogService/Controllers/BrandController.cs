@@ -7,6 +7,7 @@ using ProductCatalogService.Controllers.Payload.Brands;
 using ProductCatalogService.Models;
 using ProductCatalogService.Repositories.Common;
 using ProductCatalogService.Services;
+using ProductCatalogService.Services.AWSServices;
 
 namespace ProductCatalogService.Controllers;
 
@@ -15,8 +16,23 @@ namespace ProductCatalogService.Controllers;
 public class BrandController(
     IRepository<Brand> repository,
     IBrandService brandService,
-    IMapper mapper) : BaseController
+    IMapper mapper,
+    IAWSS3Service s3Service) : BaseController
 {
+
+    [HttpPost("TestS3")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> TestS3([FromForm] TestS3 request)
+    {
+        var filePath = Path.GetTempFileName();
+        await using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await request.File.CopyToAsync(stream);
+        }
+
+        var result = await s3Service.UploadFileAsync(filePath, request.File.FileName);
+        return Ok(result);
+    }
 
     // GET: Retrieve all brands
     [HttpGet]
@@ -82,4 +98,9 @@ public class BrandController(
         await repository.DeleteAsync(id);
         return NoContent();
     }
+}
+
+public class TestS3
+{
+    public IFormFile File { get; set; }
 }

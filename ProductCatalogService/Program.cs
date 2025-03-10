@@ -17,6 +17,7 @@ builder.Services.AddAntiforgery(options => options.SuppressXFrameOptionsHeader =
 builder.Services.AddMongoDb(builder.Configuration);
 builder.Services.AddRepositories();
 builder.Services.AddStorageService(builder.Configuration);
+builder.Services.AddMessaging(builder.Configuration);
 builder.Services.AddAutoMapperProfiles();
 builder.Services.AddGrpc();
 builder.Services.AddOpenApi();
